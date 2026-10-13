@@ -1,0 +1,25 @@
+{% extends 'master/base.html' %}
+
+{% block Content %}
+
+<div class="container mt-5">
+    <div class="card shadow mx-auto" style="max-width: 650px;">
+        <div class="card-header bg-warning">
+            <h4 class="mb-0">Update Student</h4>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {{ form.as_p }}
+
+                <button type="submit" class="btn btn-success">Update Student</button>
+
+                <a href="{% url 'student_list' %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

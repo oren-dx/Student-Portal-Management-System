@@ -1,0 +1,285 @@
+{% extends 'master/base.html' %}
+
+{% block Content %}
+
+<div class="container py-5">
+
+    <!-- Student Profile -->
+    <div class="card shadow border-0 rounded-4 overflow-hidden mb-4">
+
+        <div class="card-header bg-primary text-white text-center py-3">
+            <h3 class="mb-0">Student Details</h3>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="text-center mb-4">
+
+                {% if student.image %}
+                <img src="{{ student.image.url }}" alt="{{ student.name }}" class="rounded-circle img-thumbnail mb-3"
+                    style="width:150px;height:150px;object-fit:cover;">
+                {% else %}
+                <div class="rounded-circle bg-light border d-flex
+                                align-items-center justify-content-center
+                                mx-auto mb-3" style="width:150px;height:150px;">
+                    <span class="text-muted">No Image</span>
+                </div>
+                {% endif %}
+
+                <h4 class="fw-bold">
+                    {{ student.name|default:"N/A" }}
+                </h4>
+
+                <span class="badge bg-primary">
+                    {{ student.department|default:"Not Assigned" }}
+                </span>
+
+            </div>
+
+            <h5 class="border-bottom pb-2 mb-3">
+                Personal Information
+            </h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                        <small class="text-muted">Username</small>
+                        <div class="fw-semibold">
+                            {{ student.user.username|default:"N/A" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                        <small class="text-muted">Role</small>
+                        <div class="fw-semibold">
+                            {{ student.user.role|default:"N/A" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                        <small class="text-muted">Email Address</small>
+                        <div class="fw-semibold">
+                            {{ student.email|default:"N/A" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="border rounded-3 p-3 h-100">
+                        <small class="text-muted">Phone Number</small>
+                        <div class="fw-semibold">
+                            {{ student.phone|default:"N/A" }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <div class="border rounded-3 p-3">
+                        <small class="text-muted">Address</small>
+                        <div class="fw-semibold">
+                            {{ student.address|default:"N/A" }}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+
+                {% if request.user.role == 'Admin' %}
+                    <a href="{% url 'student_create' %}" class="btn btn-success">Add Student</a>
+                {% else %}
+                {% if not request.user.student_profile %}
+                    <a href="{% url 'student_create' %}" class="btn btn-success">Create My Profile</a>
+                    {% endif %}
+                {% endif %}
+
+                <a href="{% url 'student_list' %}" class="btn btn-secondary px-4">
+                    Back
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Academic Results -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-header bg-success text-white py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-mortarboard"></i> Academic Results
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            {% with results=student.results.all %}
+            {% if results %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped
+                                      align-middle text-center">
+
+                    <thead class="table-success">
+                        <tr>
+                            <th>Semester</th>
+                            <th>Subject</th>
+                            <th>Marks</th>
+                            <th>Total</th>
+                            <th>Grade</th>
+                            <th>GPA</th>
+                            <th>Year</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for result in results %}
+                        <tr>
+                            <td>{{ result.get_semester_display }}</td>
+                            <td>{{ result.subject_name }}</td>
+                            <td>{{ result.marks_obtained }}</td>
+                            <td>{{ result.total_marks }}</td>
+                            <td>{{ result.grade|default:"N/A" }}</td>
+                            <td>{{ result.gpa|default:"N/A" }}</td>
+                            <td>{{ result.exam_year }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">
+                No academic results found.
+            </p>
+            {% endif %}
+            {% endwith %}
+
+        </div>
+    </div>
+
+
+    <!-- Student Fees -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-header bg-warning py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-cash-stack"></i> Tuition & Other Fees
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            {% with fees=student.fees.all %}
+            {% if fees %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped
+                                      align-middle text-center">
+
+                    <thead class="table-warning">
+                        <tr>
+                            <th>Fee Type</th>
+                            <th>Semester</th>
+                            <th>Description</th>
+                            <th>Total Fee</th>
+                            <th>Paid</th>
+                            <th>Due</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for fee in fees %}
+                        <tr>
+                            <td>{{ fee.get_fee_type_display }}</td>
+                            <td>{{ fee.semester }}</td>
+                            <td>{{ fee.description|default:"N/A" }}</td>
+                            <td>{{ fee.amount }}</td>
+                            <td class="text-success fw-bold">
+                                {{ fee.paid_amount }}
+                            </td>
+                            <td class="text-danger fw-bold">
+                                {{ fee.due_amount }}
+                            </td>
+                            <td>{{ fee.due_date|default:"N/A" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">
+                No fee records found.
+            </p>
+            {% endif %}
+            {% endwith %}
+
+        </div>
+    </div>
+
+
+    <!-- Payment History -->
+    <div class="card shadow-sm border-0 rounded-4 mb-4">
+
+        <div class="card-header bg-info text-dark py-3">
+            <h5 class="mb-0">
+                <i class="bi bi-receipt"></i> Payment History
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            {% with payments=student.fee_payments.all %}
+            {% if payments %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped
+                                      align-middle text-center">
+
+                    <thead class="table-info">
+                        <tr>
+                            <th>Fee Type</th>
+                            <th>Amount Paid</th>
+                            <th>Payment Method</th>
+                            <th>Payment Date</th>
+                            <th>Transaction ID</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for payment in payments %}
+                        <tr>
+                            <td>{{ payment.fee.get_fee_type_display }}</td>
+                            <td class="text-success fw-bold">
+                                {{ payment.amount }}
+                            </td>
+                            <td>{{ payment.get_payment_method_display }}</td>
+                            <td>{{ payment.payment_date }}</td>
+                            <td>
+                                {{ payment.transaction_id|default:"N/A" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center mb-0">
+                No payment history found.
+            </p>
+            {% endif %}
+            {% endwith %}
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

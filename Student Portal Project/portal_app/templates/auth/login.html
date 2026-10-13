@@ -1,0 +1,30 @@
+{% extends 'master/base.html' %}
+
+{% block Content %}
+
+    <h1 class="py-3">User Login Page</h1>
+    {% include 'master/message.html' %}
+
+    <form action="", method="POST">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label class="form-label">Enter username or email</label>
+            <input type="text" name="text" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Enter password</label>
+            <input type="password" name="password" class="form-control">
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success">Login</button>
+        </div>
+        <div class="mb-3">
+            <a href="{% url 'register_view' %}" class="btn btn-primary">Register</a>
+        </div>
+
+    </form>
+
+{% endblock Content %}

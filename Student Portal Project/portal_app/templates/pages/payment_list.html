@@ -1,0 +1,66 @@
+
+{% extends 'master/base.html' %}
+
+{% block Content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Fee Payment History</h3>
+        {% if request.user.role == 'Student' %}
+        <a href="{% url 'payment_create' %}" class="btn btn-success"> Record Payment</a>
+        {% endif %}
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Sl</th>
+                        <th>Student</th>
+                        <th>Fee Type</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Date</th>
+                        <th>Method</th>
+                        <th>Transaction ID</th>
+                        {% if request.user.role == 'Admin' %}
+                        <th>Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ payment.student.name }}</td>
+                        <td>{{ payment.fee.get_fee_type_display }}</td>
+                        <td class="text-success fw-bold">
+                            {{ payment.amount }}
+                        </td>
+                        <td>{{ payment.payment_date }}</td>
+                        <td>{{ payment.get_payment_method_display }}</td>
+                        <td>{{ payment.transaction_id|default:"—" }}</td>
+                        {% if request.user.role == 'Admin' %}
+                        <td>
+                            <form method="POST"
+                                  action="#">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">
+                            No payment history found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock Content %}

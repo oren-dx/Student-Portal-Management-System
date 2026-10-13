@@ -1,0 +1,76 @@
+{% extends 'master/base.html' %}
+
+{% block Content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Student Fees</h3>
+        <div>
+            <a href="{% url 'payment_list' %}" class="btn btn-info">Payment</a>
+            {% if request.user.role == 'Admin' %}
+            <a href="{% url 'fee_create' %}" class="btn btn-primary">+ Add Fee</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Sl</th>
+                        <th>Student</th>
+                        <th>Fee Type</th>
+                        <th>Semester</th>
+                        <th>Amount</th>
+                        <th>Paid</th>
+                        <th>Due</th>
+                        <th>Due Date</th>
+                        {% if request.user.role == 'Admin' %}
+                        <th>Action</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fee in fees %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ fee.student.name }}</td>
+                        <td>{{ fee.get_fee_type_display }}</td>
+                        <td>{{ fee.semester }}</td>
+                        <td>{{ fee.amount }}</td>
+                        <td>{{ fee.paid_amount }}</td>
+                        <td>
+                            <span class="badge bg-danger">
+                                {{ fee.due_amount }}
+                            </span>
+                        </td>
+                        <td>{{ fee.due_date|default:"—" }}</td>
+                        {% if request.user.role == 'Admin' %}
+                        <td>
+                            <a href="{% url 'fee_update' fee.id %}"
+                               class="btn btn-sm btn-warning">Edit</a>
+
+                            <form method="POST"
+                                  action="#"
+                                  class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger">
+                                    Delete
+                                </button>
+                            </form>
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-4">
+                            No fee records found.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock Content %}
